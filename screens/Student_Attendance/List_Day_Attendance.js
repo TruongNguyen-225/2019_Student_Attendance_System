@@ -35,7 +35,7 @@ class FlatListItem extends Component {
     return (
       <View style={style.viewOneClass}>
         <TouchableOpacity style={style.viewFlatList}
-          onPress={() =>this.props.navigation.navigate ('Attendance', {keyClass: this.state.getKey})}
+          onPress={() =>this.props.navigation.navigate ('View_Attendance_Day',{ngaydiemdanh:this.props.item})}
         >
           <View style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'space-between',flex: 1 }} >
             <View style={[ styles.styleColumn,{flex: 1, borderLeftWidth: 0.5, borderLeftColor: 'gray'},]} >
@@ -43,14 +43,14 @@ class FlatListItem extends Component {
             </View>
             <View style={[styles.styleColumn, {flex: 7}]}>
               <Text style={{fontSize: 12, fontWeight: '700', opacity: 0.7}}>
-                {this.props.item.className}
+                {this.props.item}
               </Text>
             </View>
-            <View style={[styles.styleColumn, {flex: 2}]}>
+            {/* <View style={[styles.styleColumn, {flex: 2}]}>
               <Text style={{fontSize: 12, fontWeight: '700', opacity: 0.7}}>
                 {this.state.check}
               </Text>
-            </View>
+            </View> */}
           </View>
         </TouchableOpacity>
       </View>
@@ -93,7 +93,7 @@ var thoigian = new Date ();
 var date = thoigian.getDate ();
 var month = thoigian.getMonth () + 1;
 var year = thoigian.getFullYear ();
-var datecurrent = year + '/' + month + '/' + date;
+var datecurrent = year + '-' + month + '-' + date;
 
 export default class List_Day_Attendance extends Component {
   static navigationOptions = {
@@ -109,8 +109,10 @@ export default class List_Day_Attendance extends Component {
       datecurrent: datecurrent,
       class: [],
       classDone: [],
+      ngaydiemdanh_temp:[],
+      ngaydiemdanh :[],
       status: false,
-      router: 'HomeScreen',
+      router: 'List_Attendanced',
       tittle: 'NGÀY ĐÃ ĐIỂM DANH',
     };
     Global.arrayClass = this.state.class;
@@ -123,38 +125,56 @@ export default class List_Day_Attendance extends Component {
     const {currentUser} = firebase.auth ();
     this.setState ({currentUser});
     //lấy danh sách lớp HOC SINH ĐÃ THAM GIA VỀ
-    await firebase
-      .database ()
-      .ref ()
-      .child ('Relationship/' + this.state.userData.MSSV)
-      .on ('value', async childSnapshot => {
-        const classRoom = [];
-        childSnapshot.forEach (doc => {
-          classRoom.push ({
-            key: doc.val (),
-          });
-          this.setState ({
-            class: classRoom,
-          });
+    await firebase.database().ref().child('Relationship/' + this.state.userData.MSSV).on('value', async childSnapshot => {
+      const classRoom = [];
+      childSnapshot.forEach(doc => {
+        classRoom.push({
+          key: doc.val(),
         });
-        var arr = [];
-        this.state.class.forEach (async element => {
-          await firebase
-            .database ()
-            .ref ('Manage_Class/' + element.key)
-            .on ('value', value => {
-              
-              if (value.exists ()) {
-                console.log('log ra key', element.key)
-                arr.push ({className: value.toJSON ().className, key: element.key});
-              }
-              this.setState ({
-                classDone: arr,
-              });
-            });
+        this.setState({
+          class: classRoom,
         });
       });
-  }
+      var arr = [];
+      var arrTemp= [];
+      this.state.class.forEach(async element => {
+        console.log('check',element.key)
+        await firebase.database().ref('Manage_Class/' + element.key + '/Attendance').on('value', value => {
+          if (value.exists()) {
+            // this.setState({
+            //   diemdanh:'✔',
+            // })
+            // console.log('va')
+            // arrTemp.push(value);
+            value.forEach( x =>{
+              arrTemp.push( x.key);
+              let ans = deduplicate(arrTemp);
+              function deduplicate(arr) {
+                let isExist = (arr, x) => arr.indexOf(x) > -1;
+                let ans = [];
+                arr.forEach(element => {
+                  if(!isExist(ans, element)) ans.push(element);
+                });
+                return ans;
+              }
+              this.setState({
+                ngaydiemdanh_temp:ans
+              })
+            }) 
+            Global.diemdanh = this.state.diemdanh;
+            firebase.database().ref('Manage_Class/' + element.key).on('value', async(value) => {
+              if (value.exists()) {
+                await   arr.push({ className: value.toJSON().className, key: element.key });
+                this.setState({
+                      classDone: arr,
+                });
+              }
+            })
+          }
+        });
+      });
+    });
+}
   getUserData = async () => {
     await AsyncStorage.getItem ('userData').then (value => {
       const userData = JSON.parse (value);
@@ -187,7 +207,7 @@ export default class List_Day_Attendance extends Component {
         
 
         <FlatList
-          data={this.state.classDone}
+          data={this.state.ngaydiemdanh_temp}
           style={{marginVertical: 0}}
           renderItem={({item, index}) => {
             return (

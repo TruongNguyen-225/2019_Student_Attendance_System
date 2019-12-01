@@ -98,7 +98,7 @@ var month = thoigian.getMonth() + 1;
 var year = thoigian.getFullYear();
 var datecurrent = year + '-' + month + '-' + date;
 
-export default class List_Attendanced extends Component {
+export default class View_Attendance_Day extends Component {
   static navigationOptions = {
     header: null,
   };
@@ -113,7 +113,7 @@ export default class List_Attendanced extends Component {
       class: [],
       classDone: [],
       status: false,
-      router: 'HomeScreen',
+      router: 'List_Day_Attendance',
       tittle: 'THÔNG TIN ĐIỂM DANH',
       diemdanh: '❌'
     };
@@ -122,7 +122,9 @@ export default class List_Attendanced extends Component {
   }
 
   async componentDidMount() {
-    Global.router = this.state.router;
+     Global.router = this.state.router;
+    const ngaydiemdanh = this.props.navigation.state.params.ngaydiemdanh;
+
     await this.getUserData();
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
@@ -140,7 +142,8 @@ export default class List_Attendanced extends Component {
       });
       var arr = [];
       this.state.class.forEach(async element => {
-        await firebase.database().ref('Manage_Class/' + element.key + '/Attendance/' + this.state.datecurrent).orderByChild('MSSV').equalTo(this.state.userData.MSSV).on('value', value => {
+          console.log('ngaydiemdanh',ngaydiemdanh);
+        await firebase.database().ref('Manage_Class/' + element.key + '/Attendance/' + ngaydiemdanh).orderByChild('MSSV').equalTo(this.state.userData.MSSV).on('value', value => {
           if (value.exists()) {
             this.setState({
               diemdanh: '✔',
@@ -166,6 +169,7 @@ export default class List_Attendanced extends Component {
     });
   };
   render() {
+    const ngaydiemdanh = this.props.navigation.state.params.ngaydiemdanh;
     return (
       <View style={styles.container}>
         <Tittle {...this.props} />
@@ -173,7 +177,7 @@ export default class List_Attendanced extends Component {
           <View style={[styles.header, { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: HEIGHT / 24, }]}>
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
               <View style={{ width: '96%', borderWidth: 0, height: HEIGHT / 25, paddingLeft: 0 }}>
-                <Text>Ngày : {this.state.datecurrent}</Text>
+                <Text>Ngày : {ngaydiemdanh}</Text>
               </View>
             </View>
           </View>
@@ -208,12 +212,6 @@ export default class List_Attendanced extends Component {
           }}
           keyExtractor={(item, id) => item.id}
         />
-        <View >
-          <TouchableOpacity style={styles.viewButton}
-            onPress={() => this.props.navigation.navigate('List_Day_Attendance')}>
-            <Text>Theo dõi những ngày điểm danh khác</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   }
