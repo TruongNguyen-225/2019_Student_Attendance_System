@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   View,
   Text,
-  StatusBar,
   Image,
   FlatList,
   TouchableOpacity,
@@ -30,7 +29,7 @@ class FlatListItem extends Component {
   render() {
     return (
       <View style={style.viewOneClass}>
-        <TouchableOpacity style={style.viewFlatList}>
+        <TouchableOpacity style={style.viewFlatList} onPress={()=>this.props.navigation.navigate('List_Student_Join',{infoClass:this.props.item})}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1, }}>
             <View style={{ width: 50, height: 50, borderWidth: 0, borderRadius: 999, alignItems: 'center', justifyContent: 'center', }}>
               <Image source={school} style={{ width: 50, height: 50 }} />
@@ -76,7 +75,7 @@ const style = StyleSheet.create({
   }
 });
 
-export default class Class_Joined extends Component {
+export default class Class_Waiting extends Component {
   static navigationOptions = {
     header: null,
   };
@@ -87,9 +86,9 @@ export default class Class_Joined extends Component {
       userData: {},
       class: [],
       classDone: [],
-      isChecked:'Đã Chốt Lớp , Lớp Có Thể Điểm Danh',
+      isChecked:'Đang Xử Lý',
       router: 'HomeScreen',
-      tittle: 'DANH SÁCH LỚP ĐÃ THAM GIA',
+      tittle: 'DANH SÁCH LỚP ĐANG CHỜ',
     };
     Global.arrayClass = this.state.class;
     Global.tittle = this.state.tittle;
@@ -113,12 +112,13 @@ export default class Class_Joined extends Component {
         });
         var arr = [];
         this.state.class.forEach(async (element) => {
+            console.log('có value',element)
           await firebase.database().ref("Manage_Class/" + element.key).on('value', (value) => {
             if (value.exists()) {
-              if(value.toJSON().isChecked === this.state.isChecked)
-              {
-                arr.push({ className: value.toJSON().className });
-              }
+                if(value.toJSON().isChecked === this.state.isChecked)
+                {
+                    arr.push({ className: value.toJSON().className ,key:element.key});
+                }
             }
             this.setState({
               classDone: arr

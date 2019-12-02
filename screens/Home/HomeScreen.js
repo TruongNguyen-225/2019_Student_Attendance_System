@@ -4,13 +4,9 @@ import {
   Text,
   StatusBar,
   Image,
-  FlatList,
-  TouchableHighlight,
   StyleSheet,
   Dimensions,
-  Alert,
   ScrollView,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import OpenDrawer from '../Header/OpenDrawer';
@@ -19,7 +15,6 @@ import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage';
 import Global from '../../constants/global/Global';
 import OfflineNotice from '../Header/OfflineNotice';
-import Swipeout from 'react-native-swipeout';
 
 import icons_add from '../../assets/icons/icons8-add-file-99.png';
 import icons_load from '../../assets/icons/QR_Code-256.png';
@@ -32,7 +27,6 @@ const {width: WIDTH} = Dimensions.get ('window');
 const {height: HEIGHT} = Dimensions.get ('window');
 
 var system = firebase.database ().ref ().child ('Manage_Class');
-
 export default class HomeScreen extends Component {
   static navigationOptions = {
     header: null,
@@ -41,7 +35,6 @@ export default class HomeScreen extends Component {
     super (props);
     this.state = {
       userData: {},
-      show: false,
       class: [],
       newClassName: '',
       loading: false,
@@ -57,7 +50,6 @@ export default class HomeScreen extends Component {
       closeClass:true,
       classClosed:[],
       resultFail:false,
-      show: false,
     };
     Global.arrayClass = this.state.class;
   }
@@ -66,72 +58,6 @@ export default class HomeScreen extends Component {
     this.getUserData ();
     const {currentUser} = firebase.auth ();
     this.setState ({currentUser});
-    await system.orderByChild('status').equalTo(this.state.status)
-    .on ('value', childSnapshot => {
-      const classRoom = [];
-      if (childSnapshot.exists ()) {
-        childSnapshot.forEach (doc => {
-          classRoom.push ({
-                key: doc.key,
-          status: doc.toJSON ().status,
-          _id: doc.toJSON ()._id,
-          className: doc.toJSON ().className,
-          class: doc.toJSON ().class,
-          subject: doc.toJSON ().subject,
-          count: doc.toJSON ().count,
-          teacher: doc.toJSON ().teacher,
-          student_join: this.state.student_join,
-          });
-        });
-        this.setState ({
-          class: classRoom.sort ((a, b) => {
-            return a.className < b.className;
-          }),
-          count: this.state.class.length,
-          txtSearch: '',
-        });
-      } else {
-        classRoom.push ({
-          textFail: 'Hiện tại chưa có lớp học nào , hãy tạo lớp mới để bắt đầu !',
-        });
-        this.setState ({
-          resultFail: true,
-          txtSearch: '',
-        });
-      }
-      console.log ('classRoom ', this.state.class);
-      
-    });
-
-    await system
-    .orderByChild ('status')
-    .equalTo (this.state.closeClass)
-    .on ('value', childSnapshot => {
-      const classClosed = [];
-      if (childSnapshot.exists ()) {
-        childSnapshot.forEach (doc => {
-          classClosed.push ({
-            className: doc.toJSON ().className,
-            id: doc.toJSON ()._id,
-          });
-        });
-        this.setState ({
-          classClosed: classClosed.sort ((a, b) => {
-            return a.className < b.className;
-          }),
-          count: this.state.class.length,
-          txtSearch: '',
-        });
-      } else {
-        classClosed.push ({
-          textFail: 'Hiện tại chưa có lớp học nào được chốt , vui lòng theo dõi lớp học đang xử lý và chốt nếu đủ lượng học sinh tham gia lớp !',
-        });
-        this.setState ({
-          resultFail: true,
-          txtSearch: '',
-        });
-      }
-    });
   }
   getUserData = async () => {
     await AsyncStorage.getItem ('userData').then (value => {
@@ -143,7 +69,6 @@ export default class HomeScreen extends Component {
     () => this.props.navigation.navigate ('Search');
   }
   render () {
-   
     return (
       <View style={{flex: 1}}>
         <OfflineNotice style={{flex: 1}} />
@@ -151,7 +76,6 @@ export default class HomeScreen extends Component {
         <View style={{flexDirection: 'row'}}>
           <OpenDrawer {...this.props} />
           <Search_TextInput
-            // {...this.props}
             onGoToSearch={() => this.props.navigation.navigate ('SearchScreen')}
           />
         </View>
@@ -230,7 +154,7 @@ export default class HomeScreen extends Component {
                 </View>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('NativeBase')}>
+                      onPress={()=>this.props.navigation.navigate('Class_Waiting')}>
                     <View style={styles.styleImg}>
                       <Image source={icon_wait} style={{width: '80%', height: '80%'}} />
                     </View>

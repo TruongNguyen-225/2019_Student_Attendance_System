@@ -197,11 +197,6 @@ export default class List_Day_Attendance extends Component {
                 NGÀY ĐIỂM DANH
               </Text>
             </View>
-            <View style={[styles.styleColumn, {flex: 2}]}>
-              <Text style={{fontSize: 12, fontWeight: '700', opacity: 0.7}}>
-                AT
-              </Text>
-            </View>
           </View>
         </View>
         

@@ -37,6 +37,9 @@ import List_Attendanced from '../screens/Student_Attendance/List_Attendanced';
 import QrCode_Attendance from '../screens/Student_Attendance/QrCode_Attendance';
 import List_Day_Attendance from '../screens/Student_Attendance/List_Day_Attendance';
 import View_Attendance_Day from '../screens/Student_Attendance/View_Attendance_Day';
+import Class_Waiting from '../screens/Student_Attendance/Class_Waiting';
+import List_Student_Join from '../screens/Student_Attendance/List_Student_Join';
+
 
 import Update_Manage_Class from '../screens/Class/Update_Manage_Class';
 import ShowStudentJoin from '../screens/Class/ShowStudentJoin';
@@ -87,6 +90,8 @@ export const RootStack = createStackNavigator (
     QrCode_Attendance,
     List_Day_Attendance,
     View_Attendance_Day,
+    Class_Waiting,
+    List_Student_Join,
   },
   {
     initialRouteName: 'HomeScreen',

@@ -177,7 +177,7 @@ export default class List_Attendanced extends Component {
               </View>
             </View>
           </View>
-          <View style={styles.header}>
+          <View style={[styles.header,{opacity:.9}]}>
             <View style={[styles.styleColumn, { flex: 1 }]}>
               <Text>STT</Text>
             </View>
