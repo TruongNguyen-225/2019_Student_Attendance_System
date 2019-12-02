@@ -130,7 +130,7 @@ export default class HomeScreen extends Component {
                 </View>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('CreateClass')}>
+                      onPress={()=>this.props.navigation.navigate('Update_Schedule')}>
                     <View style={styles.styleImg}>
                       <Image source={icons_danger} style={{width: '80%', height: '80%'}} />
                     </View>

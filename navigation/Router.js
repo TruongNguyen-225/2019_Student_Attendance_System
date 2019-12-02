@@ -39,7 +39,7 @@ import List_Day_Attendance from '../screens/Student_Attendance/List_Day_Attendan
 import View_Attendance_Day from '../screens/Student_Attendance/View_Attendance_Day';
 import Class_Waiting from '../screens/Student_Attendance/Class_Waiting';
 import List_Student_Join from '../screens/Student_Attendance/List_Student_Join';
-
+import Update_Schedule from '../screens/Student_Attendance/Update_Schedule';
 
 import Update_Manage_Class from '../screens/Class/Update_Manage_Class';
 import ShowStudentJoin from '../screens/Class/ShowStudentJoin';
@@ -92,6 +92,7 @@ export const RootStack = createStackNavigator (
     View_Attendance_Day,
     Class_Waiting,
     List_Student_Join,
+    Update_Schedule,
   },
   {
     initialRouteName: 'HomeScreen',

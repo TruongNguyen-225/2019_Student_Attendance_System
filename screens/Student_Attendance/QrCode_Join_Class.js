@@ -17,9 +17,6 @@ const {width: WIDTH} = Dimensions.get ('window');
 const {height: HEIGHT} = Dimensions.get ('window');
 const RootRef = firebase.database ().ref ().child ('Manage_Class');
 
-var newKey = null;
-var keypath = null;
-var path = null;
 var keyRoot = null;
 export default class QrCode_Join_Class extends Component {
   static navigationOptions = {
@@ -29,7 +26,7 @@ export default class QrCode_Join_Class extends Component {
     super (props);
     this.state = {
       tittle: 'THAM GIA LỚP HỌC',
-      // router: 'Main',
+      router: 'HomeScreen',
       textId: '',
       userData: {},
       itemData: [],
@@ -38,7 +35,7 @@ export default class QrCode_Join_Class extends Component {
       listClassJoined: [],
     };
     Global.tittle = this.state.tittle;
-    // Global.router = this.state.router;
+    Global.router = this.state.router;
     Global.listClassJoined;
   }
   componentDidMount () {

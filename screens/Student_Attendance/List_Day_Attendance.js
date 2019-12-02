@@ -39,7 +39,7 @@ class FlatListItem extends Component {
         >
           <View style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'space-between',flex: 1 }} >
             <View style={[ styles.styleColumn,{flex: 1, borderLeftWidth: 0.5, borderLeftColor: 'gray'},]} >
-            <Text>1</Text>
+                <Text>{this.props.index+1}</Text>
             </View>
             <View style={[styles.styleColumn, {flex: 7}]}>
               <Text style={{fontSize: 12, fontWeight: '700', opacity: 0.7}}>

@@ -24,10 +24,6 @@ var thoigian = new Date();
 var date = thoigian.getDate();
 var month = thoigian.getMonth() + 1;
 var year = thoigian.getFullYear();
-var hour = thoigian.getHours();
-var minutes = thoigian.getMinutes();
-var seconds = thoigian.getSeconds();
-
 var datecurrent = year + '-' + month + '-' + date;
 
 export default class QrCode_Attendance extends Component {
@@ -38,7 +34,7 @@ export default class QrCode_Attendance extends Component {
     super(props);
     this.state = {
       tittle: 'ĐIỂM DANH VỚI QRCODE',
-      router: 'Main',
+      router: 'HomeScreen',
       textId: '',
       userData: {},
       itemData: [],
