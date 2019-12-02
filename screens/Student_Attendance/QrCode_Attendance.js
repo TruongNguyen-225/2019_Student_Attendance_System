@@ -4,21 +4,21 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Dimensions,
   Alert,
+  PermissionsAndroid, 
+  Platform,
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage';
 import Tittle from '../Header/Tittle';
 import Global from '../../constants/global/Global';
+import { CameraKitCameraScreen, } from 'react-native-camera-kit';
 
 const { width: WIDTH } = Dimensions.get('window');
 const { height: HEIGHT } = Dimensions.get('window');
 const RootRef = firebase.database().ref().child('Manage_Class');
 
-var newKey = null;
-var path = null;
 var keyRoot = null;
 var thoigian = new Date();
 var date = thoigian.getDate();
@@ -42,6 +42,8 @@ export default class QrCode_Attendance extends Component {
       member: [],
       listClassJoined: [],
       datecurrent:datecurrent,
+      qrvalue: '',
+      opneScanner: false,
     };
     Global.tittle = this.state.tittle;
     Global.router = this.state.router;
@@ -56,40 +58,83 @@ export default class QrCode_Attendance extends Component {
       this.setState({ userData: userData });
     });
   };
-
-  handleLogin = () => {
+  onOpenlink() {
+    //Function to open URL, If scanned 
+    Linking.openURL(this.state.qrvalue);
+    //Linking used to open the URL in any browser that you have installed
+  }
+  onBarcodeScan(qrvalue) {
+    //called after te successful scanning of QRCode/Barcode
+    this.setState({ qrvalue: qrvalue });
+    this.setState({ opneScanner: false });
+  }
+  onOpneScanner() {
+    var that =this;
+    //To Start Scanning
+    if(Platform.OS === 'android'){
+      async function requestCameraPermission() {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,{
+              'title': 'CameraExample App Camera Permission',
+              'message': 'CameraExample App needs access to your camera '
+            }
+          )
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            //If CAMERA Permission is granted
+            that.setState({ qrvalue: '' });
+            that.setState({ opneScanner: true });
+          } else {
+            alert("CAMERA permission denied");
+          }
+        } catch (err) {
+          alert("Camera permission err",err);
+          console.warn(err);
+        }
+      }
+      //Calling the camera permission function
+      requestCameraPermission();
+    }else{
+      that.setState({ qrvalue: '' });
+      that.setState({ opneScanner: true });
+    }    
+  }
+  render() {
+    let displayModal;
+    console.log('value',this.state.qrvalue);
     const { userData, mssv, listClassJoined } = this.state;
     try {
       RootRef.orderByChild('_id')
-        .equalTo(this.state.textId)
+        .equalTo(this.state.qrvalue)
         .on('child_added', data => {
           data.key;
           try {
-            firebase.database().ref().child('Manage_Class/' + data.key +`/Attendance/${this.state.datecurrent}`).orderByChild('MSSV').equalTo(this.state.userData.MSSV)
-              .once('value', childSnapshot => {
-                if (childSnapshot.exists()) {
-                  Alert.alert(
-                    'Thông báo',
-                    'Bạn đã điểm danh rồi , hãy kiểm tra lại !'
-                  );
-                  this.props.navigation.navigate('HomeScreen')
-                } else {
-                    RootRef.child(data.key+`/StudentJoin`).orderByChild('MSSV').equalTo(this.state.userData.MSSV)
-                    .on('value',value =>{
-                        if(!value.exists())
-                        {
-                            Alert.alert('Thông báo', 'Điểm danh không thành công, có thể bạn chưa gia nhập lớp học này ? ');
-                            this.props.navigation.navigate('HomeScreen')
-                        }
-                        else{
+            RootRef.child(data.key+`/StudentJoin`).orderByChild('MSSV').equalTo(this.state.userData.MSSV)
+            .on('value',value =>{
+                if(!value.exists())
+                {
+                    Alert.alert('Thông báo', 'Điểm danh không thành công, có thể bạn chưa gia nhập lớp học này ? ');
+                    this.props.navigation.navigate('QrCode_Attendance')
+                }
+                else {
+                  firebase.database().ref().child('Manage_Class/' + data.key +`/Attendance/${this.state.datecurrent}`).orderByChild('MSSV').equalTo(this.state.userData.MSSV)
+                  .once('value', childSnapshot => {
+                    if (childSnapshot.exists()) {
+                      Alert.alert(
+                        'Thông báo',
+                        'Bạn đã điểm danh rồi , hãy kiểm tra lại !'
+                      );
+                      this.props.navigation.navigate('HomeScreen')
+                    } else{
                         newKey = RootRef.child(data.key+`/Attendance/${this.state.datecurrent}`).push(userData);
-                        keyRoot = RootRef.child(data.key).key;
-                        this.state.listClassJoined.push(keyRoot);
-                        this.setState({
-                          listClassJoined,
-                        });
-                        Alert.alert('Thông báo', 'Điểm danh thành công !');
+                        // keyRoot = RootRef.child(data.key).key;
+                        // console.log('keyRoot',keyRoot)
+                        // this.state.listClassJoined.push(keyRoot);
+                        // this.setState({
+                        //   listClassJoined,
+                        // });
                         this.props.navigation.navigate('HomeScreen')
+                        Alert.alert('Thông báo', 'Điểm danh thành công !');
                         }
                     })                  
                 }
@@ -102,137 +147,81 @@ export default class QrCode_Attendance extends Component {
     } catch (e) {
       console.log('error', e);
     }
-  };
-  show_Info_A_Student = () => {
-    path = newKey.path;
-    console.log('LOG RA1', firebase.database().ref(path));
-    firebase
-      .database()
-      .ref(path)
-      .orderByChild('id')
-      .equalTo(this.state.userData.id)
-      .on('value', childSnapshot => {
-        var itemData = [];
-        childSnapshot.forEach(doc => {
-          itemData.push({
-            id: doc.toJSON().id,
-            email: doc.toJSON().email,
-            MSSV: doc.toJSON().MSSV,
-            fullName: doc.toJSON().fullName,
-            address: doc.toJSON().numberPhone,
-            proofs: doc.toJSON().proofs,
-            sex: doc.toJSON().sex,
-            address: doc.toJSON().address,
-            dateBirthday: doc.toJSON().dateBirthday,
-          });
-        });
-        this.setState({
-          itemData: itemData,
-        });
-      });
-  };
-  Create_node=()=>{
-    firebase.database().ref().child('Relationship/'+this.state.userData.MSSV)
-  }
-  render() {
+    if (!this.state.opneScanner) {
+      return (
+        <View style={{flex:1}}>
+        <Tittle {...this.props} />
+
+        <View style={styles.container}>
+            <Text style={styles.heading}>QUÉT QRCODE ĐỂ ĐIỂM DANH</Text>
+            {this.state.qrvalue.includes("http") ? 
+              <TouchableOpacity
+                onPress={() => this.onOpenlink()}
+                style={styles.button}>
+                  <Text style={{ color: '#FFFFFF', fontSize: 12 }}>NHẤN ĐỂ ĐIỂM DANH</Text>
+              </TouchableOpacity>
+              : null
+            }
+            <TouchableOpacity
+              onPress={() => this.onOpneScanner()}
+              style={styles.button}>
+                <Text style={{ color: '#FFFFFF', fontSize: 12 }}>
+                QUÉT QR CODE
+                </Text>
+            </TouchableOpacity>
+        </View>
+        </View>
+
+      );
+    }
     return (
       <View style={{ flex: 1 }}>
-        <Tittle {...this.props} />
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 0, backgroundColor: 'rgba(112, 119, 127, 0.3)', }}>
-          <View style={styles.styleContent}>
-            <View style={styles.rowInput}>
-              <View style={styles.stylesLable}>
-                <Text>QrCode</Text>
-              </View>
-              <TextInput
-                style={styles.viewTextInput}
-                keyboardType="default"
-                placeholderTextColor="gray"
-                fontStyle="italic"
-                placeholder="Nhập mã QrCode "
-                autoCapitalize="none"
-                onChangeText={textId => this.setState({ textId })}
-                value={this.state.textId}
-              />
-            </View>
-            <View
-              style={{
-                alignItems: 'center',
-                height: HEIGHT / 8,
-                justifyContent: 'center',
-                paddingTop: 220,
-              }}>
-              <TouchableOpacity
-                style={styles.bigButton}
-                onPress={this.handleLogin}
-              >
-                <Text style={styles.buttonText}>Điểm Danh</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <Text>email:{this.state.userData.email}</Text>
-          <Text>mssv:{this.state.userData.MSSV}</Text>
-        </View>
+        <CameraKitCameraScreen
+          showFrame={false}
+          //Show/hide scan frame
+          scanBarcode={true}
+          //Can restrict for the QR Code only
+          laserColor={'blue'}
+          //Color can be of your choice
+          frameColor={'yellow'}
+          //If frame is visible then frame color
+          colorForScannerFrame={'black'}
+          //Scanner Frame color
+          onReadCode={event =>
+            this.onBarcodeScan(event.nativeEvent.codeStringValue)
+          }
+        />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  rowInput: {
-    flexDirection: 'row',
-    height: HEIGHT / 13,
-    width: WIDTH * 0.9,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingLeft: 10,
-    marginVertical: 10,
-  },
-  stylesLable: {
-    justifyContent: 'center',
-    backgroundColor: 'rgba(112, 119, 127, 0.3)',
-    borderBottomLeftRadius: 7,
-    borderTopLeftRadius: 7,
-    width: WIDTH * 0.22,
-    height: HEIGHT / 13,
-    paddingLeft: 10,
-    borderLeftColor: 'rgba(112, 119, 127, 0.3)',
-    borderWidth: 1,
-    borderTopColor: '#dddddd',
-    borderBottomColor: '#dddddd',
-    borderRightWidth: 0,
-  },
-  styleContent: {
-    backgroundColor: '#fff',
-    width: WIDTH * 0.96,
-    borderRadius: 5,
-    alignItems: 'center',
-    paddingTop: 60,
+  container: {
     flex: 1,
-    marginVertical: 7,
-
-  },
-  viewTextInput: {
-    height: HEIGHT / 13,
-    width: WIDTH * 0.65,
-    padding: 10,
-    borderColor: 'rgba(112, 119, 127, 0.3)',
-    borderWidth: 1,
-    backgroundColor: '#fff',
-  },
-  bigButton: {
-    width: WIDTH * 0.9,
-    height: 50,
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0093c4',
+    backgroundColor:'white'
   },
-  buttonText: {
-    fontFamily: 'Avenir',
-    color: '#fff',
-    fontWeight: '400',
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#537791',
+    padding: 10,
+    width:300,
+    marginTop:16
   },
+  heading: { 
+    color: 'black', 
+    fontSize: 19, 
+    alignSelf: 'center', 
+    padding: 10, 
+    marginTop: 30 
+  },
+  simpleText: { 
+    color: 'black', 
+    fontSize: 20, 
+    alignSelf: 'center', 
+    padding: 10, 
+    marginTop: 16
+  }
 });
