@@ -49,6 +49,12 @@ export default class List_Student_Join extends Component {
                         classRoom.push({
                             MSSV: x.toJSON().MSSV,
                             email: x.toJSON().email,
+                            address: x.toJSON().address,
+                            dateBirthday:x.toJSON().dateBirthday,
+                            fullName:x.toJSON().fullName,
+                            numberPhone:x.toJSON().numberPhone,
+                            sex:x.toJSON().sex,
+                            avt:x.toJSON().proofs[0]["url"],
                         });
                     }
                     this.setState({listStudent:classRoom});
@@ -82,8 +88,8 @@ export default class List_Student_Join extends Component {
               renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
-                    // onPress={() =>
-                    //   this.props.navigation.navigate ('Attendance',{infoPerson:item})}
+                    onPress={() =>
+                      this.props.navigation.navigate ('Profile',{infoStudent:item})}
                   >
                     <View style={styles.row}>
                       <View style={styles.left}>

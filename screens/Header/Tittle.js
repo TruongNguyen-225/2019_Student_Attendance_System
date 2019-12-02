@@ -24,7 +24,8 @@ export default class Tittle extends Component {
         <View style={styles.contentChild}>
           <TouchableOpacity
             onPress={() => {
-              this.props.navigation.push(Global.router);
+              // this.props.navigation.push(Global.router);
+              this.props.navigation.goBack()
             }}
             style={{height: 30, width: 30}}
           >
