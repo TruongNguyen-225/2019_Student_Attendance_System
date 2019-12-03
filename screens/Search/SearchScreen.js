@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -7,156 +7,226 @@ import {
   TextInput,
   Image,
   FlatList,
+  TouchableOpacity
 } from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import firebase from 'react-native-firebase';
 import Global from '../../constants/global/Global';
 import OfflineNotice from '../Header/OfflineNotice';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import logoBack from '../../assets/icons/back.png';
-import loser from '../../assets/icons/nothing.png';
 import gif from '../../assets/icons/search.gif';
-import school from '../../assets/icons/school.png';
-import goto from '../../assets/icons/icons8-more-than-50.png'
+import school from '../../assets/icons/icons8-abc-96.png';
+import left from '../../assets/icons/left.png';
 
-var system = firebase.database ().ref ().child ('Manage_Class');
+var system = firebase.database().ref().child('Manage_Class');
 
-const {width: WIDTH} = Dimensions.get ('window');
-const {height: HEIGHT} = Dimensions.get ('window');
+const { width: WIDTH } = Dimensions.get('window');
+const { height: HEIGHT } = Dimensions.get('window');
+
+class FlatListItem extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeRowKey: null,
+      listStudent: [],
+      textFail: '',
+    };
+  }
+ async componentDidMount() {
+  }
+  showInfoClass() {
+    alert("chưa làm kịp :v")
+  }
+  render() {
+    return (
+        <View style={ style.viewOneClass}>
+          <TouchableOpacity
+            style={style.viewFlatList}
+            // onPress={async () => {
+            //   await this.props.navigation.navigate('FollowClass', {
+            //     listStudent: this.state.listStudent,
+            //     thamso: this.props.item,
+            //   });
+            // }}
+            >
+            <View style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'space-between',flex: 1, }}>
+              <View style={{ width: 50, height: 50, borderWidth: 0, borderRadius: 999, alignItems: 'center', justifyContent: 'center', }}>
+                <Image source={school} style={{ width: 50, height: 50 }} />
+              </View>
+              <View style={{ justifyContent: 'flex-start', width: WIDTH * 0.73, borderWidth: 0, paddingLeft: 25, }}>
+                <Text style={{fontSize: 14,fontWeight: '700',opacity: .7,}}>
+                  {this.props.item.className}
+                </Text>
+                <Text style={{fontSize: 12, fontWeight: '700', fontStyle: 'italic',color: '#448aff', }}>
+                 Đã Tham Gia
+                </Text>
+              </View>
+              <Image
+                source={left}
+                style={{width: 20, height: 20, tintColor: '#333', marginRight: 15, }} />
+            </View>
+          </TouchableOpacity>
+        </View>
+    );
+  }
+}
+const style = StyleSheet.create({
+  viewOneClass:{
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: "#fff",
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  viewFlatList: {
+    flexDirection: 'row',
+    height: HEIGHT / 9,
+    borderBottomColor: '#f1f1f1',
+    borderBottomWidth: 1,
+    width: WIDTH,
+    paddingLeft: 10,
+    alignItems: 'center',
+    width: WIDTH * 0.97,
+    backgroundColor: '#fff'
+  },
+  styleText: {
+    fontSize: 12,
+    color: 'gray',
+  }
+});
 
 export default class SearchScreen extends Component {
   static navigationOptions = {
     header: null,
   };
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
     this.state = {
-      dataResult: [],
+      userData:{},
+      isChecked:'Đã Chốt Lớp , Lớp Có Thể Điểm Danh',
+      listClassNew: [],
+      classDone: [],
       txtSearch: '',
-      className: '',
       router: 'HomeScreen',
-      count: 0,
-      resultFail: false,
-      textFail: '',
-      textInputSearch: '',
-      classExample: {},
-      // stateEmpty: true,
+      condition1: false,
+      condition3: true,
     };
     Global.tittle = this.state.tittle;
     Global.router = this.state.router;
   }
-  async componentDidMount () {
-    this.setState ({resultFail: false});
-  }
-  async onSearch () {
-    await this.setState ({resultFail: false});
-    // await this.setState ({stateEmpty: false});
-
-    var dataResult = [];
-    var txtSearch_Split = this.state.txtSearch.split (' ');
-    await system
-      .orderByChild ('class')
-      .equalTo (this.state.txtSearch)
-      .once ('value', snapshot => {
-        if (snapshot.exists ()) {
-          snapshot.forEach (doc => {
-            dataResult.push ({
-              // text:`Kết quả tìm kiếm của ${txtSearch_Split} :`,
-              className: doc.toJSON ().className,
-            });
-          });
-          this.setState ({
-            dataResult: dataResult.sort ((a, b) => {
-              return a.date < b.date;
-            }),
-            // stateEmpty:false,
-            textInputSearch: this.state.txtSearch,
-            count: dataResult.length,
-            txtSearch: '',
-
-          });
-        } else {
-          dataResult.push ({
-            // img: <Image source={loser} style={{width:200, height:300}}/>,
-            textFail: `Không thấy kết quả nào phù hợp với ${this.state.txtSearch}!`,
-          });
-          this.setState ({
-            textInputSearch: this.state.txtSearch,
-            // stateEmpty:false,
-            resultFail: true,
-            txtSearch: '',
-          });
-        }
+  async componentDidMount() {
+    await this.getUserData();
+    //lấy danh sách lớp HOC SINH ĐÃ THAM GIA VỀ
+    await firebase.database().ref().child('Relationship/' + this.state.userData.MSSV).on('value', async (childSnapshot) => {
+      const classRoom = [];
+      childSnapshot.forEach(doc => {
+        classRoom.push({
+          key: doc.val(),
+        });
+        this.setState({
+          class: classRoom
+        });
       });
+      var arr = [];
+      this.state.class.forEach(async (element) => {
+        await firebase.database().ref("Manage_Class/" + element.key).on('value', (value) => {
+          if (value.exists()) {
+            if(value.toJSON().isChecked === this.state.isChecked)
+            {
+              arr.push({ className: value.toJSON().className });
+            }
+          }
+          this.setState({
+            classDone: arr
+          });
+        });
+      });
+    });
   }
-  render () {
+  getUserData = async () => {
+    await AsyncStorage.getItem('userData').then(value => {
+      const userData = JSON.parse(value);
+      this.setState({ userData: userData });
+    });
+  };
+  async onSearch() {
+    var key = this.state.txtSearch.toUpperCase();
+    var arr_temp = this.state.classDone;
+    var arr_search = [];
+    var arr_error = [];
+    var kt = 0;
+    for (let i = 0; i < arr_temp.length; i++) {
+      if (key.trim() === "") {
+        arr_error.push({ notice: " Bắt đầu tìm kiếm bằng cách hãy nhập gì đó !" })
+        this.setState({
+          condition1: true,
+        })
+      }
+      else
+        if (key != "") {
+          if (arr_temp[i].className.toString().toUpperCase().includes(key)) {
+            arr_search.push(arr_temp[i]);
+            kt = 1;
+            this.setState({
+              condition1: false,
+              isSearch: true,
+              condition3:false,
+            })
+          }
+        }
+    }
+    if (kt == 0)
+      console.log("Không có kết quả tìm thấy !")
+    else
+      this.setState({
+        listClassNew: arr_search,
+        condition3:false,
+      })
+  }
+  render() {
     const viewFlatList = (
-      <FlatList
-        data={this.state.dataResult}
-        renderItem={({item, index}) => {
-          return (
-            <TouchableOpacity
-              style={styles.viewFlatList}
-              onPress={() =>
-                this.props.navigation.navigate ('FollowClass', {thamso: item})}
-            >
-              <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'space-between',flex:1}}>
-                <View>
-                <Image source={school} style={{width: 50, height: 50}} />
-
-                </View>
-                <View style={{justifyContent:'flex-start',width:WIDTH*0.6}}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 'normal',
-                    }}
-                  >
-                    {item.className}
-                  </Text>
-                </View>
-                <View>
-                <Image source={goto} style={{width: 20, height: 20,tintColor:'#333',marginRight:25}} />
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-        keyExtractor={(item, id) => item.id}
-      />
+      this.state.condition1 ?
+        null
+        :
+        <FlatList
+          style={{ width: WIDTH * 0.97, borderWidth: 0, marginVertical: 5, marginHorizontal: 5 }}
+          data={this.state.listClassNew}
+          renderItem={({ item, index }) => {
+            return (
+              <FlatListItem
+                item={item}
+                index={index}
+                parentFlatList={this}
+                {...this.props}
+              />
+            );
+          }}
+          keyExtractor={(item, id) => item.id}
+        />
     );
-    const viewError = (
-      <View style={{flex: 1, alignItems: 'center',justifyContent:'center'}}>
-        <Text>
-          Không thấy kết quả nào phù hợp với {this.state.textInputSearch}!
-        </Text>
-        <Image source={loser} style={{width: 171, height: 276,}} />
+    const viewStart = (
+      <View style={styles.viewStart}>
+        <Text style={{marginVertical:50,}}>Hãy nhập gì đó vào ô tìm kiếm để bắt đầu !</Text>
+        <Image source={gif} style={{ width: WIDTH*0.9, height: 240 }} />
       </View>
     );
-    const viewEmpty = (
-      <View>
-        <Image source={gif} style={{width: 480, height: 240}} />
-        <Text>Hãy nhập tên lớp để tìm kiếm</Text>
-      </View>
-    );
-    // const Empty = this.state.stateEmpty ? viewEmpty : viewResult
-    const viewResult = this.state.resultFail ? viewError : viewFlatList;
-    const {txtSearch} = this.state;
+    const { txtSearch, condition3 } = this.state;
+    const viewBig = condition3 ? viewStart: this.state.isSearch ? viewFlatList : <View><Text>Chúng tôi không tìm thấy kết quả nào phù hợp với {this.state.txtSearch}</Text></View>;
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <OfflineNotice />
-        <View style={{flex: 1}}>
-          <View style={{flexDirection: 'row'}}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row' }}>
             <View style={styles.contentChild}>
               <TouchableOpacity
                 onPress={() => {
-                  // this.props.navigation.navigate (Global.router);
-                  this.props.navigation.goBack ();
+                  this.props.navigation.goBack();
                 }}
-                style={{height: 30, width: 30}}
+                style={{ height: 30, width: 30 }}
               >
                 <Image
-                  style={{height: 30, width: 30, tintColor: 'white'}}
+                  style={{ height: 30, width: 30, tintColor: 'white' }}
                   source={logoBack}
                 />
               </TouchableOpacity>
@@ -169,33 +239,30 @@ export default class SearchScreen extends Component {
                 underlineColorAndroid="transparent"
                 value={txtSearch}
                 onChangeText={text => {
-                  this.setState ({txtSearch: text});
+                  this.setState({ txtSearch: text });
                 }}
-                // onFocus={() => this.props.onGoToSearch ()}
-                onSubmitEditing={this.onSearch.bind (this)}
+                onSelectionChange={this.onSearch.bind(this)}
+                onSubmitEditing={this.onSearch.bind(this)}
               />
-              <View style={{width: 45}}>
+              <View style={{ width: 45 }}>
                 <Text />
               </View>
             </View>
           </View>
-
-          <View style={{flex: 1}}>
-            {viewResult}
+          <View style={styles.content}>
+            {viewBig}
           </View>
         </View>
       </View>
     );
   }
 }
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   topBar: {
-    // flexDirection: 'column',
     width: WIDTH * 0.87,
     height: HEIGHT / 12,
     backgroundColor: '#03a9f4',
     paddingTop: (HEIGHT / 12 - HEIGHT / 20) / 2,
-    // paddingLeft: 10,
   },
   textInput: {
     height: HEIGHT / 20,
@@ -219,16 +286,8 @@ const styles = StyleSheet.create ({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#03a9f4',
-    // borderWidth:1,
   },
-  viewFlatList: {
-    flexDirection: 'row',
-    height: HEIGHT / 9,
-    backgroundColor: '#fff',
-    borderBottomColor: '#f1f1f1',
-    borderBottomWidth: 1,
-    width: WIDTH,
-    paddingLeft: 30,
-    alignItems: 'center',
-  },
+content:{ flex: 1 ,alignItems:'center',justifyContent:'center',backgroundColor:'#dddddd'},
+viewStart:{ alignItems: 'center',  flex: 1 , width: WIDTH*0.95,backgroundColor:"#FFF",marginVertical:7,borderRadius:6,},
+ 
 });
