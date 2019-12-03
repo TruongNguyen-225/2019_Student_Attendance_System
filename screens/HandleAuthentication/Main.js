@@ -50,18 +50,16 @@ export default class Main extends Component {
 
   }
   getUserData = async () => {
-    await AsyncStorage.getItem ('userData').then (value => {
-      const userData = JSON.parse (value);
-      this.setState ({userData: userData});
-      console.log('db',this.state.userData)
+    await AsyncStorage.getItem('userData').then(value => {
+      const userData = JSON.parse(value);
+      this.setState({ userData: userData });
+
     });
   };
   componentDidMount () {
     const {currentUser} = firebase.auth ();
     this.setState ({currentUser});
     this.getUserData ();
-    // this.alert;
-    // Alert.alert ('Thông báo', 'Xóa tài khoản thành công !');
   }
   alert = async () => {
     Alert.alert (
@@ -208,9 +206,26 @@ export default class Main extends Component {
           ])}
         >
           <View>
+          <View>
+              <TouchableOpacity onPress={()=> this.props.navigation.navigate('My_Profile',{info:this.state.userData})}>
+                <View style={styles.rowCreateClass}>
+                  <View style={styles.viewImgIcon}>
+                    <Image source={settings} style={{height: 40, width: 40}} />
+                  </View>
+                  <View style={styles.viewText}>
+                    <Text style={styles.textDirector}>
+                      Thông Tin Cá Nhân
+                      {this.state.userData.email}
+                    </Text>
+                    <View style={{top: 2 * (HEIGHT / 10)}} />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
             <View>
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate ('Update_Info')}
+                onPress={() =>
+                  this.props.navigation.navigate ('My_Profile',{userData:this.state.userData})}
               >
                 <View style={styles.rowCreateClass}>
                   <View style={styles.viewImgIcon}>
@@ -219,38 +234,6 @@ export default class Main extends Component {
                   <View style={styles.viewText}>
                     <Text style={styles.textDirector}>
                       Cập Nhật Thông Tin
-                    </Text>
-                    <View style={{top: 2 * (HEIGHT / 10)}} />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <TouchableOpacity onPress={()=> this.props.navigation.navigate('ListClass')}>
-                <View style={styles.rowCreateClass}>
-                  <View style={styles.viewImgIcon}>
-                    <Image source={settings} style={{height: 40, width: 40}} />
-                  </View>
-                  <View style={styles.viewText}>
-                    <Text style={styles.textDirector}>
-                      Gia Nhập Lớp Học
-                    </Text>
-                    <View style={{top: 2 * (HEIGHT / 10)}} />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <TouchableOpacity 
-              onPress={()=> this.props.navigation.navigate('ShowStudentJoin')}
-              >
-                <View style={styles.rowCreateClass}>
-                  <View style={styles.viewImgIcon}>
-                    <Image source={history} style={{height: 40, width: 40}} />
-                  </View>
-                  <View style={styles.viewText}>
-                    <Text style={styles.textDirector}>
-                     Danh Sách Lớp Đã Tham Gia
                     </Text>
                     <View style={{top: 2 * (HEIGHT / 10)}} />
                   </View>

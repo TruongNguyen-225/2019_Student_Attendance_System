@@ -14,6 +14,7 @@ import firebase from 'react-native-firebase';
 import Global from '../../constants/global/Global';
 import Tittle from '../Header/Tittle';
 import samesame from '../../assets/images/samesamemon.jpg';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const {width: WIDTH} = Dimensions.get ('window');
 const {height: HEIGHT} = Dimensions.get ('window');
@@ -30,12 +31,14 @@ export default class List_Student_Join extends Component {
       listStudent:[],
       tittle: 'DANH SÁCH HỌC SINH',
       router: 'HomeScreen',
+      userData:{},
     };
     const infoClass = this.props.navigation.state.params.infoClass;
     Global.router = this.state.router;
     Global.tittle = infoClass.className;
   }
    componentDidMount(){
+     this.getUserData();
     const infoClass = this.props.navigation.state.params.infoClass;
     firebase.database().ref().child('Manage_Class/'+infoClass.key).on('value',value=>{
         if(value.exists())
@@ -56,13 +59,24 @@ export default class List_Student_Join extends Component {
                             sex:x.toJSON().sex,
                             avt:x.toJSON().proofs[0]["url"],
                         });
+          
+                        console.log('type',x.key)
                     }
+                   
                     this.setState({listStudent:classRoom});
                 });
                 });
         }
     })
   }
+  getUserData = async () => {
+    await AsyncStorage.getItem('userData').then(value => {
+      const userData = JSON.parse(value);
+      this.setState({ userData: userData });
+
+    });
+  };
+
   refesh () {
     this.setState ({
       refesh: true,
@@ -71,7 +85,7 @@ export default class List_Student_Join extends Component {
   render () {
     return (
       <View style={{flex: 1, marginTop: Platform.OS === 'ios' ? 34 : 0}}>
-        <StatusBar backgroundColor="#03a9f4" barStyle="light-content" />
+        {/* <StatusBar backgroundColor="#03a9f4" barStyle="light-content" /> */}
         <Tittle {...this.props} />
         <ScrollView>
           <View style={{zIndex: 1}}>
@@ -89,7 +103,7 @@ export default class List_Student_Join extends Component {
                 return (
                   <TouchableOpacity
                     onPress={() =>
-                      this.props.navigation.navigate ('Profile',{infoStudent:item})}
+                      this.props.navigation.navigate ('Profile',{infoStudent:item,userData:this.state.userData})}
                   >
                     <View style={styles.row}>
                       <View style={styles.left}>
@@ -108,7 +122,7 @@ export default class List_Student_Join extends Component {
                           MSSV : {item.MSSV}
                         </Text>
                         <Text style={{fontSize: 14, fontWeight: '600'}}>
-                          Email : {item.email}
+                          Email : {item.numberPhone}
                         </Text>
                         {/* <Text style={{fontSize: 14, fontWeight: '600'}}>
                           Name : {item.fullName}

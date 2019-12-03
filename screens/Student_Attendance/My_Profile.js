@@ -21,12 +21,13 @@ import birthday from '../../assets/icons/icons8-birthday-64.png';
 import mssv from '../../assets/icons/icons8-identification-documents-64.png';
 import name from '../../assets/icons/icons8-name-64.png';
 
+const {width: WIDTH} = Dimensions.get ('window');
 const {height: HEIGHT} = Dimensions.get ('window');
 const HEADER_MAX_HEIGHT = 300;
 const HEADER_MIN_HEIGHT = Platform.OS === 'ios' ? 60 : 40;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-export default class Profile extends Component {
+export default class My_Profile extends Component {
     static navigationOptions = {
         header: null,
     };
@@ -47,98 +48,56 @@ export default class Profile extends Component {
         Global.tittle = this.state.tittle
     }
     _renderScrollViewContent() {
+        const info = this.props.navigation.state.params.info;
+        console.log('user',info.email)
         // const data = Array.from({ length: 30 });
-        const userData = this.props.navigation.state.params.userData;
-        const infoStudent = this.props.navigation.state.params.infoStudent;
-        const showInfo = (
-            <View>
+        return (
+            <View style={styles.scrollViewContent}>
                 <View style={styles.row}>
                     <Image source={email} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.email}</Text>
+                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{info.email}</Text>
                 </View>
                 <View style={styles.row}>
                     <Image source={mssv} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.MSSV}</Text>
+                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{info.MSSV}</Text>
                 </View>
                 <View style={styles.row}>
                     <Image source={name} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.fullName}</Text>
+                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{info.fullName}</Text>
                 </View>
                 <View style={styles.row}>
                     <Image source={address} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.address}</Text>
+                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{info.address}</Text>
                 </View>
                 <View style={styles.row}>
                     <Image source={birthday} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.dateBirthday}</Text>
+                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{info.dateBirthday}</Text>
                 </View>
                 <View style={styles.row}>
                     <Image source={phone} style={{height:30,width:30,}}/> 
-                    
-                    <TouchableOpacity onPress={this.makeCall}>
-                        <Text style={{paddingHorizontal:20,color:'blue',opacity:.8}}>{infoStudent.numberPhone}</Text>
-                     </TouchableOpacity>
-                </View>
-                <View style={styles.row}>
-                    <Image source={sex} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.sex}</Text>
-                </View>
-            </View>
-        )
-        const hiddenInfo=(
-            <View>
-                <View style={styles.row}>
-                    <Image source={email} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.email}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Image source={mssv} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.MSSV}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Image source={name} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.fullName}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Image source={address} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'blue',opacity:.8,fontStyle: 'italic'}}>Nội dung đã bị ẩn</Text>
-                </View>
-                <View style={styles.row}>
-                    <Image source={birthday} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'blue',opacity:.8,fontStyle: 'italic'}}>Nội dung đã bị ẩn</Text>
-                </View>
-                <View style={styles.row}>
-                    <Image source={phone} style={{height:30,width:30,}}/> 
-                    
                     {/* <TouchableOpacity onPress={this.makeCall}> */}
-                        <Text style={{paddingHorizontal:20,color:'blue',opacity:.8,fontStyle: 'italic'}}>Nội dung đã bị ẩn</Text>
+                        <Text style={{paddingHorizontal:20,color:'blue',opacity:.8}}>{info.numberPhone}</Text>
                      {/* </TouchableOpacity> */}
                 </View>
                 <View style={styles.row}>
                     <Image source={sex} style={{height:30,width:30,}}/> 
-                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{infoStudent.sex}</Text>
+                    <Text style={{paddingHorizontal:20,color:'black',opacity:.8}}>{info.sex}</Text>
                 </View>
             </View>
-        )
-        const display = infoStudent.MSSV === userData.MSSV  ? showInfo :hiddenInfo
-        return (
-            <View style={styles.scrollViewContent}>
-                {display}
-            </View>
-        )
-      } 
-    makeCall = () => {
-    const infoStudent = this.props.navigation.state.params.infoStudent;
-    let phoneNumber = ''
-    if (Platform.OS === 'android') {
-        phoneNumber = `tel:${infoStudent.numberPhone}`;
-      } else {
-        phoneNumber = `telprompt:${infoStudent.numberPhone}`;
-      }
-        Linking.openURL(phoneNumber);
-      };
+        );
+    }
+    // makeCall = () => {
+    // const infoStudent = this.props.navigation.state.params.infoStudent;
+    // let phoneNumber = ''
+    // if (Platform.OS === 'android') {
+    //     phoneNumber = `tel:${infoStudent.numberPhone}`;
+    //   } else {
+    //     phoneNumber = `telprompt:${infoStudent.numberPhone}`;
+    //   }
+    //     Linking.openURL(phoneNumber);
+    //   };
     render() {
-        const infoStudent = this.props.navigation.state.params.infoStudent;
+        const info = this.props.navigation.state.params.info;
         const scrollY = Animated.add(
             this.state.scrollY,
             Platform.OS === 'ios' ? HEADER_MAX_HEIGHT : 0,
@@ -231,7 +190,7 @@ export default class Profile extends Component {
                             },
                         ]}
                     >
-                        <Text style={styles.title}>{infoStudent.email}</Text>
+                        {/* <Text style={styles.title}>{info.email}</Text> */}
                     </Animated.View>
                 </View>
             </View>

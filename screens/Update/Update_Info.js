@@ -87,7 +87,6 @@ export default class Update_Info extends Component {
       });
       console.log ('chưa update', userData);
     });
-    // this.getDataFromDB();
   }
 
   getDataFromDB () {
@@ -115,37 +114,6 @@ export default class Update_Info extends Component {
       });
     console.log ('this', this.state.userData);
   }
-  // getUserFromDB () {
-  //   var userData = {};
-
-  //   return new Promise (resolve => {
-  //     RootRef.orderByChild ('email')
-  //       .equalTo (this.state.userData.email)
-  //       .on ('value', childSnapshot => {
-  //         childSnapshot.forEach (doc => {
-  //           userData = {
-  //         id: doc.toJSON ().id,
-  //         email: doc.toJSON ().email,
-  //         MSSV: doc.toJSON ().MSSV,
-  //         fullName: doc.toJSON ().fullName,
-  //         address: doc.toJSON ().numberPhone,
-  //         proofs: doc.toJSON ().proofs,
-  //         sex: doc.toJSON ().sex,
-  //         address: doc.toJSON ().address,
-  //         dateBirthday: doc.toJSON ().dateBirthday,
-  //           };
-  //           resolve (userData);
-  //         });
-
-  //         // console.log('---------------',userData)
-
-  //       });
-
-  //   })
-  //   .then(alert(JSON.stringify(userData)))
-  //   // .then(setItemToAsyncStorage('userData',userData))
-
-  // }
   getUserFromDB () {
     return new Promise (resolve => {
       RootRef.orderByChild ('email')
@@ -163,6 +131,7 @@ export default class Update_Info extends Component {
               sex: doc.toJSON ().sex,
               address: doc.toJSON ().address,
               dateBirthday: doc.toJSON ().dateBirthday,
+              numberPhone:doc.toJSON().numberPhone,
             };
           });
           console.log (JSON.stringify (userData));
