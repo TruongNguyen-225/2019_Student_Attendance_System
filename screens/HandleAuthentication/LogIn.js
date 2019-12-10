@@ -80,7 +80,8 @@ export default class Login extends React.Component {
         this.props.navigation.navigate ('HomeScreen');
       })
       .catch (error => {
-        Alert.alert (`${error.toString ().replace ('Error: ', '')}`);
+        // Alert.alert (`${error.toString ().replace ('Error: ', '')}`);
+        Alert.alert('Tài khoản hoặc mật khẩu không chính xác !')
       });
   };
 

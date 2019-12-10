@@ -23,7 +23,7 @@ import uuid from 'uuid/v4'; // Import UUID to generate UUID
 
 var ImagePicker = NativeModules.ImageCropPicker;
 
-const RootRef = firebase.database ().ref ().child ('members');
+const RootRef = firebase.database ().ref ().child ('Account_Student');
 
 import DatePicker from 'react-native-datepicker';
 import camera from '../../assets/icons/icons8-compact-camera-96.png';
@@ -215,7 +215,7 @@ checkFomart(){
                 .catch (() => Alert ('Có lỗi xảy ra !'));
             });
           Alert.alert ('Thông báo', 'Cập nhật thông tin thành công !');
-          this.props.navigation.navigate ('Main');
+          this.props.navigation.navigate ('HomeScreen');
         }
         
       } else {

@@ -14,7 +14,7 @@ import {setItemToAsyncStorage} from './function';
 const {width: WIDTH} = Dimensions.get ('window');
 const {height: HEIGHT} = Dimensions.get ('window');
 
-const RootRef = firebase.database ().ref ().child ('members');
+const RootRef = firebase.database ().ref ().child ('Account_Student');
 let id = require('random-string')({ length: 10 });
 export default class SignUp extends Component {
   static navigationOptions = {
@@ -82,7 +82,7 @@ export default class SignUp extends Component {
         };
         RootRef.push (userData);
         await setItemToAsyncStorage ('userData', userData);
-        Alert.alert ('Thông báo', 'Đăng ký thành công\nTự động đăng nhập...');
+        Alert.alert ('Thông báo', 'Đăng ký thành công !');
         this.props.navigation.navigate ('HomeScreen');
       })
       //dang ky that bai

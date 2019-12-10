@@ -19,7 +19,6 @@ import Global from '../../constants/global/Global';
 
 import icons_logout from '../../assets/icons/icons8-shutdown-96.png';
 import settings from '../../assets/icons/icons8-settings-96.png';
-import history from '../../assets/icons/icons8-order-history-96.png';
 import profile from '../../assets/icons/icons8-contact-details-96.png';
 import delete_icons from '../../assets/icons/icons8-denied-96.png';
 import gif from '../../assets/icons/giphy.gif';
@@ -53,6 +52,7 @@ export default class Main extends Component {
     await AsyncStorage.getItem('userData').then(value => {
       const userData = JSON.parse(value);
       this.setState({ userData: userData });
+      console.log('in ra cái userData', this.state.userData)
 
     });
   };
@@ -182,9 +182,6 @@ export default class Main extends Component {
             },
           ]}
         >
-          {/* <Text style={styles.HeaderInsideText}>
-            {currentUser && currentUser.email}
-          </Text> */}
           <Text style={styles.HeaderInsideText}>
             {this.state.userData.email}
           </Text>
@@ -215,7 +212,7 @@ export default class Main extends Component {
                   <View style={styles.viewText}>
                     <Text style={styles.textDirector}>
                       Thông Tin Cá Nhân
-                      {this.state.userData.email}
+                      {/* {this.state.userData.email} */}
                     </Text>
                     <View style={{top: 2 * (HEIGHT / 10)}} />
                   </View>
@@ -225,7 +222,7 @@ export default class Main extends Component {
             <View>
               <TouchableOpacity
                 onPress={() =>
-                  this.props.navigation.navigate ('My_Profile',{userData:this.state.userData})}
+                  this.props.navigation.navigate ('Update_Info',{userData:this.state.userData})}
               >
                 <View style={styles.rowCreateClass}>
                   <View style={styles.viewImgIcon}>

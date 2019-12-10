@@ -2,8 +2,8 @@ import {
   createStackNavigator,
   createAppContainer,
   createDrawerNavigator,
-  createBottomTabNavigator,
-  DrawerNavigator,
+  // createBottomTabNavigator,
+  // DrawerNavigator,
   createSwitchNavigator,
 } from 'react-navigation';
 import {Dimensions,Image} from 'react-native';
@@ -15,9 +15,10 @@ const {height: HEIGHT} = Dimensions.get ('window');
 import home from '../assets/icons/icons8-home-page-90.png';
 import user from '../assets/icons/icons8-user-menu-male-100.png';
 import iconsClass from '../assets/icons/icons8-numbered-list-100.png';
+import logout from '../assets/icons/icons8-shutdown-96.png'
+
 
 import HomeScreen from '../screens/Home/HomeScreen';
-// import CheckWelcome from '../screens/Home/CheckWelcome';
 
 // AUTHENTICATION
 import SignUp from '../screens/HandleAuthentication/SignUp';
@@ -42,7 +43,7 @@ import List_Student_Join from '../screens/Student_Attendance/List_Student_Join';
 import Update_Schedule from '../screens/Student_Attendance/Update_Schedule';
 import Profile from '../screens/Student_Attendance/Profile';
 import My_Profile from '../screens/Student_Attendance/My_Profile';
-
+import LogOut from '../screens/HandleAuthentication/LogOut';
 import Update_Manage_Class from '../screens/Class/Update_Manage_Class';
 import ShowStudentJoin from '../screens/Class/ShowStudentJoin';
 
@@ -55,8 +56,6 @@ import Screen_Handle from '../screens/Class/Attendance_handle/Screen_Handle';
  
 //HANDLE INFORMATION
 import Update_Info from '../screens/Update/Update_Info';
-import OpenDrawer from '../screens/Header/OpenDrawer';
-
 // STUDENT 
 import QrCode_Join_Class  from '../screens/Student_Attendance/QrCode_Join_Class';
 // import OpenDrawer from '../screens/Home/HomeScreen';
@@ -97,6 +96,7 @@ export const RootStack = createStackNavigator (
     Update_Schedule,
     Profile,
     My_Profile,
+    LogOut,
   },
   {
     initialRouteName: 'HomeScreen',
@@ -112,29 +112,11 @@ export const StackLoading = createSwitchNavigator (
     initialRouteName: 'Loading',
   }
 );
-// export const StackManageClass = createStackNavigator (
-//   {
-//     CreateClass,
-//     Detail_Class,
-//     FollowClass,
-//     ListClass,
-//     Attendance,
-//     Screen_Handle,
-//     Camera,
-//     OpenDrawer,
-    
-    
-//   },
-//   {
-//     // initialRouteName: 'HomeScreen',
-//   }
-// );
 export const StackManageInfo = createStackNavigator (
   {
     Main,
     Update_Info,
     Update_Manage_Class,
-    // HomeScreen,
   
   },
   {
@@ -147,9 +129,7 @@ export const StackSearch = createStackNavigator ({
 
 export const StackSearchBig = createSwitchNavigator ({
   RootStack,
-  // StackManageClass,
   StackSearch,
-  // StackManageInfo,
   
 });
 let routeConfig = {
@@ -174,6 +154,13 @@ let routeConfig = {
       style = {{ width: 26, height: 26, tintColor:'blue'}}>
      </Image>  }
   },
+  // 'Đăng Xuất': {
+  //   screen: LogOut,
+  //   navigationOptions: { drawerIcon: <Image 
+  //     source = {logout}
+  //     style = {{ width: 26, height: 26, tintColor:'blue'}}>
+  //    </Image>  }
+  // },
 };
 let drawerNavConfig = {
   unmountInactiveRoutes: true,

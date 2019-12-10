@@ -40,9 +40,10 @@ class FlatListItem extends Component {
                 {this.props.item.className}
               </Text>
               <Text style={{ fontSize: 12, fontWeight: '700', fontStyle: 'italic', color: '#448aff', }}>
-                {this.props.item.className}
+              {this.props.item.teacher}
               </Text>
-              <Text style={{ fontSize: 12, color: '#455a64', fontStyle: 'italic' }}>{this.props.item.time}</Text>
+              <Text style={{ fontSize: 12, color: '#455a64', fontStyle: 'italic' }}>{this.props.item.dateStart} :  {this.props.item.dateFinish}</Text>
+
             </View>
           </View>
         </TouchableOpacity>
@@ -117,7 +118,13 @@ export default class Class_Joined extends Component {
             if (value.exists()) {
               if(value.toJSON().isChecked === this.state.isChecked)
               {
-                arr.push({ className: value.toJSON().className });
+                arr.push({ className: value.toJSON().className ,
+                  key:element.key,
+                  dateFinish:value.toJSON().dateFinish,
+                  dateStart:value.toJSON().dateStart,
+                  teacher: value.toJSON().teacher,
+                  
+                  });
               }
             }
             this.setState({

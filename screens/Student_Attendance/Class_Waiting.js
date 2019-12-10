@@ -39,9 +39,9 @@ class FlatListItem extends Component {
                 {this.props.item.className}
               </Text>
               <Text style={{ fontSize: 12, fontWeight: '700', fontStyle: 'italic', color: '#448aff', }}>
-                {this.props.item.className}
+                {this.props.item.teacher}
               </Text>
-              <Text style={{ fontSize: 12, color: '#455a64', fontStyle: 'italic' }}>{this.props.item.time}</Text>
+              <Text style={{ fontSize: 12, color: '#455a64', fontStyle: 'italic' }}>{this.props.item.dateStart} :  {this.props.item.dateFinish}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -86,7 +86,7 @@ export default class Class_Waiting extends Component {
       userData: {},
       class: [],
       classDone: [],
-      isChecked:'Đang Xử Lý',
+      isChecked:0,
       router: 'HomeScreen',
       tittle: 'DANH SÁCH LỚP ĐANG CHỜ',
     };
@@ -112,12 +112,17 @@ export default class Class_Waiting extends Component {
         });
         var arr = [];
         this.state.class.forEach(async (element) => {
-            console.log('có value',element)
           await firebase.database().ref("Manage_Class/" + element.key).on('value', (value) => {
             if (value.exists()) {
                 if(value.toJSON().isChecked === this.state.isChecked)
                 {
-                    arr.push({ className: value.toJSON().className ,key:element.key});
+                    arr.push({ className: value.toJSON().className ,
+                              key:element.key,
+                              dateFinish:value.toJSON().dateFinish,
+                              dateStart:value.toJSON().dateStart,
+                              teacher: value.toJSON().teacher,
+                              
+                              });
                 }
             }
             this.setState({
@@ -131,6 +136,7 @@ export default class Class_Waiting extends Component {
     await AsyncStorage.getItem('userData').then(value => {
       const userData = JSON.parse(value);
       this.setState({ userData: userData });
+      console.log('in ra mssv', this.state.userData.MSSV)
     });
   };
   render() {
