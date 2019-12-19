@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import {setItemToAsyncStorage} from './function';
 
-const RootRef = firebase.database ().ref ().child ('members');
+const RootRef = firebase.database ().ref ().child ('Account_Student');
 
 const {width: WIDTH} = Dimensions.get ('window');
 const {height: HEIGHT} = Dimensions.get ('window');

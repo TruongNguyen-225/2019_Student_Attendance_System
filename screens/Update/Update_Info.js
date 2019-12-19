@@ -36,8 +36,12 @@ var thoigian = new Date ();
 var date = thoigian.getDate ();
 var month = thoigian.getMonth () + 1;
 var year = thoigian.getFullYear ();
-
-var currentDay = year + '-' + month + '-' + date;
+if( date < 10)
+{
+  date = '0'+date;
+  console.log(date);
+}
+var currentDay = date + '-' + month + '-' + year;
 
 export default class Update_Info extends Component {
   static navigationOptions = {
@@ -53,6 +57,7 @@ export default class Update_Info extends Component {
       user: null,
       isAuthenticated: false,
       date: currentDay,
+      date_temp : currentDay,
       MSSV: '',
       fullName: '',
       numberPhone: '',
@@ -215,7 +220,7 @@ checkFomart(){
                 .catch (() => Alert ('Có lỗi xảy ra !'));
             });
           Alert.alert ('Thông báo', 'Cập nhật thông tin thành công !');
-          this.props.navigation.navigate ('HomeScreen');
+          this.props.navigation.navigate ('Main');
         }
         
       } else {
@@ -457,35 +462,24 @@ checkFomart(){
                     <Text style={{color: '#597D9A'}}>Ngày sinh </Text>
                   </View>
                   <View style={{marginLeft: 30}}>
-                    <DatePicker
+                  <DatePicker
                       style={{
                         width: WIDTH * 0.5,
-                        // fontSize: 12,
                         backgroundColor: '#fff',
                       }}
                       date={this.state.date}
                       mode="date"
-                      placeholder="select date"
-                      format="YYYY-MM-DD"
-                      minDate="1900-01-01"
-                      maxDate="2030-01-01"
+                      placeholder="--Chọn ngày-tháng-năm -- "
+                      format="DD-MM-YYYY"
+                      minDate="01-01-1900"
+                      maxDate={this.state.date_temp}
                       confirmBtnText="Confirm"
                       cancelBtnText="Cancel"
                       showIcon={true}
                       customStyles={{
-                        dateIcon: {
-                          position: 'absolute',
-                          right: 0,
-                          top: 4,
-                          marginLeft: 0,
-                        },
-                        dateInput: {},
-
-                        // ... You can check the source to find the other keys.
+                        dateIcon: {position: 'absolute',right: 0,top: 4, marginLeft: 0 },
+                        dateInput: {},                    
                       }}
-                      // onDateChange={date => {
-                      //   this.setState ({dateBirthday: date});
-                      // }}
                       onDateChange={date => {
                         this.setState ({date: date, dateBirthday: date});
                       }}

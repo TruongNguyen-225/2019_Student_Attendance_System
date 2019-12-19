@@ -29,7 +29,7 @@ const {height: HEIGHT} = Dimensions.get ('window');
 const Header_Maximum_Height = 270;
 const Header_Minimum_Height = 50;
 
-const RootRef = firebase.database ().ref ().child ('member');
+const RootRef = firebase.database ().ref ().child ('Account_Student');
 
 export default class Main extends Component {
   static navigationOptions = {
@@ -170,10 +170,8 @@ export default class Main extends Component {
     });
     return (
       <View style={styles.MainContainer}>
-        <StatusBar backgroundColor="#03a9f4" barStyle="light-content" />
-
         <Tittle {...this.props} />
-<Animated.View
+        <Animated.View
           style={[
             styles.Header,
             {

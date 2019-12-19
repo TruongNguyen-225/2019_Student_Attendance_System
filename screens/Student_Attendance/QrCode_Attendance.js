@@ -15,17 +15,12 @@ import Tittle from '../Header/Tittle';
 import Global from '../../constants/global/Global';
 import { CameraKitCameraScreen, } from 'react-native-camera-kit';
 
-const { width: WIDTH } = Dimensions.get('window');
-const { height: HEIGHT } = Dimensions.get('window');
 const RootRef = firebase.database().ref().child('Manage_Class');
-
-var keyRoot = null;
 var thoigian = new Date();
 var date = thoigian.getDate();
 var month = thoigian.getMonth() + 1;
 var year = thoigian.getFullYear();
 var datecurrent = year + '-' + month + '-' + date;
-
 export default class QrCode_Attendance extends Component {
   static navigationOptions = {
     header: null,
@@ -70,14 +65,13 @@ export default class QrCode_Attendance extends Component {
   }
   onOpneScanner() {
     var that =this;
-    //To Start Scanning
     if(Platform.OS === 'android'){
       async function requestCameraPermission() {
         try {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.CAMERA,{
-              'title': 'CameraExample App Camera Permission',
-              'message': 'CameraExample App needs access to your camera '
+              'title': 'Thông báo !',
+              'message': 'Camera cần cấp quyền sử dụng camera của thiết bị, hãy nhấn OK '
             }
           )
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -85,13 +79,13 @@ export default class QrCode_Attendance extends Component {
             that.setState({ qrvalue: '' });
             that.setState({ opneScanner: true });
           } else {
-            alert("CAMERA permission denied");
+            alert("Camera bị chặn quyền sử dụng ");
           }
         } catch (err) {
-          alert("Camera permission err",err);
+          alert("Đã xảy ra lỗi !");
           console.warn(err);
         }
-      }
+      } 
       //Calling the camera permission function
       requestCameraPermission();
     }else{
@@ -100,16 +94,14 @@ export default class QrCode_Attendance extends Component {
     }    
   }
   render() {
-    let displayModal;
-    console.log('value',this.state.qrvalue);
-    const { userData, mssv, listClassJoined } = this.state;
+    const { userData } = this.state;
     try {
       RootRef.orderByChild('_id')
         .equalTo(this.state.qrvalue)
         .on('child_added', data => {
           data.key;
           try {
-            RootRef.child(data.key+`/StudentJoin`).orderByChild('MSSV').equalTo(this.state.userData.MSSV)
+            RootRef.child(data.key+`/StudentJoin`).orderByChild('MSSV').equalTo(userData.MSSV)
             .on('value',value =>{
                 if(!value.exists())
                 {

@@ -8,6 +8,7 @@ import {
   Dimensions,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import OpenDrawer from '../Header/OpenDrawer';
 import Search_TextInput from '../Header/Search_TextInput';
@@ -52,6 +53,8 @@ export default class HomeScreen extends Component {
       resultFail:false,
     };
     Global.arrayClass = this.state.class;
+    this.getUserData ();
+
   }
   async componentDidMount () {
     Global.router = this.state.router;
@@ -63,10 +66,32 @@ export default class HomeScreen extends Component {
     await AsyncStorage.getItem ('userData').then (value => {
       const userData = JSON.parse (value);
       this.setState ({userData: userData});
+      console.log('MSSV',this.state.userData.MSSV)
     });
   };
   onGoToSearch () {
     () => this.props.navigation.navigate ('Search');
+  }
+  _Alert(){
+    Alert.alert('Thông báo !','Vui lòng cập nhật thông tin cá nhân trước khi sử dụng chức năng này ! ')
+  }
+  _goToAttendance_QrCode(){
+    this.state.userData.MSSV ? this.props.navigation.navigate('QrCode_Attendance') : this._Alert();
+  }
+  _goToJoin_QrCode(){
+    this.state.userData.MSSV ? this.props.navigation.navigate('QrCode_Join_Class') : this._Alert();
+  }
+  _goToList_Attendanced(){
+    this.state.userData.MSSV ? this.props.navigation.navigate('List_Attendanced') : this._Alert();
+  }
+  _goToClass_Joined(){
+    this.state.userData.MSSV ? this.props.navigation.navigate('Class_Joined') : this._Alert();
+  }
+  _goToClass_Waiting(){
+    this.state.userData.MSSV ? this.props.navigation.navigate('Class_Waiting') : this._Alert();
+  }
+  _goToUpdate_Schedule(){
+    this.state.userData.MSSV ? this.props.navigation.navigate('Update_Schedule') : this._Alert();
   }
   render () {
     return (
@@ -85,7 +110,8 @@ export default class HomeScreen extends Component {
               <View style={styles.child_row}>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('QrCode_Join_Class')}>
+                      // onPress={()=>this.props.navigation.navigate('QrCode_Join_Class')}>
+                      onPress={()=>this._goToJoin_QrCode()}>
                     <View style={styles.styleImg}>
                       <Image source={icons_add} style={{width: '80%', height: '80%'}} />
                     </View>
@@ -99,7 +125,8 @@ export default class HomeScreen extends Component {
                 </View>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('QrCode_Attendance')}>
+                      // onPress={()=>this.props.navigation.navigate('QrCode_Attendance')}>
+                      onPress={()=>this._goToAttendance_QrCode()}>
                     <View style={styles.styleImg}>
                       <Image source={icons_load} style={{width: '80%', height: '80%'}} />
                     </View>
@@ -115,8 +142,7 @@ export default class HomeScreen extends Component {
               <View style={styles.child_row}>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('List_Attendanced')}
-                      >
+                      onPress={()=>this._goToList_Attendanced()}>
                     <View style={styles.styleImg}>
                       <Image source={icons_checked} style={{width: '80%', height: '80%'}} />
                     </View>
@@ -130,7 +156,7 @@ export default class HomeScreen extends Component {
                 </View>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('Update_Schedule')}>
+                      onPress={()=>this._goToUpdate_Schedule()}>
                     <View style={styles.styleImg}>
                       <Image source={icons_danger} style={{width: '80%', height: '80%'}} />
                     </View>
@@ -143,7 +169,7 @@ export default class HomeScreen extends Component {
               <View style={styles.child_row}>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('Class_Joined')}>
+                      onPress={()=>this._goToClass_Joined()}>
                     <View style={styles.styleImg}>
                       <Image source={icon_done} style={{width: '80%', height: '80%'}} />
                     </View>
@@ -154,7 +180,7 @@ export default class HomeScreen extends Component {
                 </View>
                 <View style={styles.children}>
                   <TouchableOpacity style={styles.styleTouch}
-                      onPress={()=>this.props.navigation.navigate('Class_Waiting')}>
+                     onPress={()=>this._goToClass_Waiting()}>
                     <View style={styles.styleImg}>
                       <Image source={icon_wait} style={{width: '80%', height: '80%'}} />
                     </View>

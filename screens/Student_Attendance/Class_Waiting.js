@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Dimensions,
   TextInput,
+  Alert,
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -100,7 +101,8 @@ export default class Class_Waiting extends Component {
     const { currentUser } = firebase.auth();
     this.setState({ currentUser });
     //lấy danh sách lớp HOC SINH ĐÃ THAM GIA VỀ
-    await firebase.database().ref().child('Relationship/' + this.state.userData.MSSV).on('value', async (childSnapshot) => {
+    this.state.userData.MSSV ?
+    await firebase.database().ref('Relationship/' + this.state.userData.MSSV).on('value', async (childSnapshot) => {
         const classRoom = [];
         childSnapshot.forEach(doc => {
           classRoom.push({
@@ -112,25 +114,38 @@ export default class Class_Waiting extends Component {
         });
         var arr = [];
         this.state.class.forEach(async (element) => {
-          await firebase.database().ref("Manage_Class/" + element.key).on('value', (value) => {
-            if (value.exists()) {
-                if(value.toJSON().isChecked === this.state.isChecked)
-                {
-                    arr.push({ className: value.toJSON().className ,
-                              key:element.key,
-                              dateFinish:value.toJSON().dateFinish,
-                              dateStart:value.toJSON().dateStart,
-                              teacher: value.toJSON().teacher,
-                              
-                              });
-                }
-            }
-            this.setState({
-              classDone: arr
+          if(element.exists()){
+            await firebase.database().ref("Manage_Class/" + element.key).on('value', (value) => {
+              if (value.exists()) {
+                  if(value.toJSON().isChecked === this.state.isChecked)
+                  {
+                      arr.push({ className: value.toJSON().className ,
+                                key:element.key,
+                                dateFinish:value.toJSON().dateFinish,
+                                dateStart:value.toJSON().dateStart,
+                                teacher: value.toJSON().teacher,      
+                     });
+                  }
+              }
+              this.setState({
+                classDone: arr
+              });
             });
-          });
+          }
         });
-      });
+      }) :  Alert.alert (
+        'Thông báo',
+        'Vui lòng cập nhật thông tin cá nhân trước khi sử dụng chức năng này !',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+             this.props.navigation.navigate('HomeScreen')
+            },
+          },
+        ],
+        {cancelable: true}
+      );
   }
   getUserData = async () => {
     await AsyncStorage.getItem('userData').then(value => {
